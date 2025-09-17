@@ -7,7 +7,7 @@ export function Navbar() {
   const { user, logout } = useAuth();
 
   return (
-    <nav className="bg-white shadow-sm border-b">
+    <nav className="bg-[#c6ecd9] shadow-sm border-b">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <Link to="/" className="flex items-center space-x-2">
@@ -24,9 +24,6 @@ export function Navbar() {
             </Link>
             <Link to="/challenges" className="text-gray-700 hover:text-green-600 transition-colors">
               Daily Challenges
-            </Link>
-            <Link to="/profile" className="text-gray-700 hover:text-green-600 transition-colors">
-              Profile
             </Link>
           </div>
 
