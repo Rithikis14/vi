@@ -1,10 +1,11 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { Leaf, LogOut, User, Award } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { usePoints } from '../context/PointsContext';
 
 export function Navbar() {
   const { user, logout } = useAuth();
+  const { totalPoints } = usePoints();
 
   return (
     <nav className="bg-[#c6ecd9] shadow-sm border-b sticky top-0 z-50">
@@ -44,10 +45,15 @@ export function Navbar() {
 
           <div className="flex items-center space-x-4">
             {user && (
-              <div className="flex items-center space-x-2 bg-yellow-50 px-3 py-1 rounded-full">
+              <div 
+                className="flex items-center space-x-2 bg-yellow-50 px-3 py-1 rounded-full"
+                aria-live="polite"
+                aria-label={`Total points ${totalPoints}`}
+                title={`Total points: ${totalPoints}`}
+              >
                 <Award className="h-4 w-4 text-yellow-600" />
                 <span className="text-sm font-medium text-yellow-800">
-                  {user.points} pts
+                  {totalPoints} pts
                 </span>
               </div>
             )}

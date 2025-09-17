@@ -1,7 +1,12 @@
 // src/components/CarbonGame.tsx
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import { X } from "lucide-react";
+import { usePoints } from "../context/PointsContext";
 
 const CarbonGame: React.FC = () => {
+  const navigate = useNavigate();
+  const { addPoints } = usePoints();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [score, setScore] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
@@ -10,6 +15,7 @@ const CarbonGame: React.FC = () => {
   const [highScore, setHighScore] = useState(0);
   const [showTutorial, setShowTutorial] = useState(true);
   const [lives, setLives] = useState(3); // Add lives state
+  const [gameCompleted, setGameCompleted] = useState(false);
 
   const player = useRef({ x: 200, y: 450, width: 60, height: 60, speed: 9 });
   const objects = useRef<{ x: number; y: number; type: "good" | "bad"; icon: string; id: number }[]>([]);
@@ -89,6 +95,11 @@ const CarbonGame: React.FC = () => {
       // Game over when no lives left
       if (newLives <= 0) {
         setIsRunning(false);
+        // Add points when game ends
+        if (!gameCompleted) {
+          addPoints(score);
+          setGameCompleted(true);
+        }
       }
       
       return newLives;
@@ -298,11 +309,20 @@ const CarbonGame: React.FC = () => {
     objects.current = [];
     particles.current = [];
     player.current.x = 200;
+    setGameCompleted(false);
     
     // Reset canvas position if it was shaken
     if (canvasRef.current) {
       canvasRef.current.style.transform = "translate(0, 0)";
     }
+  };
+
+  const exitGame = () => {
+    if (isRunning && !gameCompleted) {
+      // Add points if exiting during play
+      addPoints(score);
+    }
+    navigate('/games');
   };
 
   const startGame = () => {
@@ -313,8 +333,19 @@ const CarbonGame: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-blue-50 to-green-50 p-4 font-sans">
-      <h1 className="text-4xl font-bold mb-2 text-green-700 drop-shadow-md">🌱 Carbon Catcher Game</h1>
-      <p className="text-gray-600 mb-6">Catch eco-friendly items, avoid pollutants!</p>
+      <div className="relative w-full max-w-4xl">
+        <button
+          onClick={exitGame}
+          className="absolute top-0 right-0 bg-red-500 hover:bg-red-600 text-white p-2 rounded-full transition-colors"
+          title="Exit Game"
+        >
+          <X className="h-5 w-5" />
+        </button>
+        <div className="text-center">
+          <h1 className="text-4xl font-bold mb-2 text-green-700 drop-shadow-md">🌱 Carbon Catcher Game</h1>
+          <p className="text-gray-600 mb-6">Catch eco-friendly items, avoid pollutants!</p>
+        </div>
+      </div>
       
       <div className="flex gap-8 mb-4 bg-white rounded-xl p-4 shadow-md">
         <div className="text-lg font-semibold text-gray-700">Score: <span className="text-green-600">{score}</span></div>
@@ -353,13 +384,37 @@ const CarbonGame: React.FC = () => {
       />
       
       <div className="mt-6 flex gap-4">
-        {!isRunning && (
+        {!isRunning && lives > 0 && (
           <button
             onClick={startGame}
             className="px-8 py-3 rounded-xl bg-green-600 text-white hover:bg-green-700 font-medium shadow-md transition-transform hover:scale-105"
           >
-            {lives <= 0 ? "Play Again" : "Start Game"}
+            Start Game
           </button>
+        )}
+        {!isRunning && lives <= 0 && (
+          <div className="text-center">
+            <div className="bg-white rounded-xl p-6 shadow-md mb-4">
+              <div className="text-4xl mb-2">🎯</div>
+              <h2 className="text-2xl font-bold text-gray-800 mb-2">Game Over!</h2>
+              <div className="text-lg text-gray-600 mb-2">Final Score: <span className="font-bold text-green-600">{score}</span></div>
+              <div className="text-lg text-gray-600 mb-4">Points Earned: <span className="font-bold text-yellow-600">+{score} pts</span></div>
+              <div className="flex gap-4 justify-center">
+                <button
+                  onClick={startGame}
+                  className="px-6 py-3 rounded-xl bg-green-600 text-white hover:bg-green-700 font-medium shadow-md transition-transform hover:scale-105"
+                >
+                  Play Again
+                </button>
+                <button
+                  onClick={exitGame}
+                  className="px-6 py-3 rounded-xl bg-gray-600 text-white hover:bg-gray-700 font-medium shadow-md transition-transform hover:scale-105"
+                >
+                  Exit
+                </button>
+              </div>
+            </div>
+          </div>
         )}
         {isRunning && (
           <button
