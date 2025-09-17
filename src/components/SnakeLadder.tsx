@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Sun, Wind, Zap, Droplets, TreePine, Recycle, Flame, Car, Factory, Zap as Battery, Mountain, Fuel } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Sun, Wind, Zap, Droplets, TreePine, Recycle, Flame, Car, Factory, Zap as Battery, Mountain, Fuel, X } from 'lucide-react';
+import { usePoints } from '../context/PointsContext';
 
 interface Resource {
   id: number;
@@ -41,6 +43,8 @@ const specialTiles = [
 ];
 
 function App() {
+  const navigate = useNavigate();
+  const { addPoints } = usePoints();
   const [gameState, setGameState] = useState<GameState>({
     currentPosition: 0,
     score: 0,
@@ -51,6 +55,7 @@ function App() {
     feedbackMessage: '',
     isMoving: false,
   });
+  const [gameCompleted, setGameCompleted] = useState(false);
 
   const generateQuestion = () => {
     const randomResource = resources[Math.floor(Math.random() * resources.length)];
@@ -90,6 +95,12 @@ function App() {
 
         const hasWon = finalPosition >= 24;
 
+        // Add points when game is won
+        if (hasWon && !gameCompleted) {
+          addPoints(prev.score);
+          setGameCompleted(true);
+        }
+
         return {
           ...prev,
           currentPosition: finalPosition,
@@ -124,7 +135,16 @@ function App() {
       feedbackMessage: '',
       isMoving: false,
     });
+    setGameCompleted(false);
     setTimeout(generateQuestion, 1000);
+  };
+
+  const exitGame = () => {
+    if (gameState.gameStatus === 'playing' && !gameCompleted) {
+      // Add points if exiting during play
+      addPoints(gameState.score);
+    }
+    navigate('/games');
   };
 
   useEffect(() => {
@@ -176,22 +196,40 @@ function App() {
   if (gameState.gameStatus === 'won') {
     return (
       <div className="min-h-screen bg-gradient-to-br from-green-400 via-blue-500 to-purple-600 flex items-center justify-center p-4">
-        <div className="bg-white rounded-3xl p-8 text-center max-w-md animate-bounce">
+        <div className="bg-white rounded-3xl p-8 text-center max-w-md animate-bounce relative">
+          <button
+            onClick={exitGame}
+            className="absolute top-4 right-4 bg-red-500 hover:bg-red-600 text-white p-2 rounded-full transition-colors"
+            title="Exit Game"
+          >
+            <X className="h-5 w-5" />
+          </button>
           <div className="text-6xl mb-4">🎉</div>
           <h1 className="text-4xl font-bold text-purple-600 mb-4">You Won!</h1>
           <p className="text-xl text-gray-700 mb-2">Amazing job learning about resources!</p>
-          <p className="text-lg text-gray-600 mb-6">
+          <p className="text-lg text-gray-600 mb-2">
             Score: <span className="font-bold text-green-600">{gameState.score}</span> points
+          </p>
+          <p className="text-lg text-gray-600 mb-2">
+            Points Earned: <span className="font-bold text-yellow-600">+{gameState.score} pts</span>
           </p>
           <p className="text-sm text-gray-600 mb-6">
             Questions answered: {gameState.questionsAnswered}
           </p>
-          <button
-            onClick={resetGame}
-            className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-8 py-4 rounded-full text-xl font-bold hover:scale-105 transform transition-all duration-200 shadow-lg"
-          >
-            Play Again! 🚀
-          </button>
+          <div className="flex gap-4 justify-center">
+            <button
+              onClick={resetGame}
+              className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-4 rounded-full text-xl font-bold hover:scale-105 transform transition-all duration-200 shadow-lg"
+            >
+              Play Again! 🚀
+            </button>
+            <button
+              onClick={exitGame}
+              className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-4 rounded-full text-xl font-bold hover:scale-105 transform transition-all duration-200 shadow-lg"
+            >
+              Exit
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -201,7 +239,14 @@ function App() {
     <div className="min-h-screen bg-gradient-to-br from-blue-400 via-purple-500 to-pink-500 p-4">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-6">
+        <div className="text-center mb-6 relative">
+          <button
+            onClick={exitGame}
+            className="absolute top-0 right-0 bg-red-500 hover:bg-red-600 text-white p-2 rounded-full transition-colors"
+            title="Exit Game"
+          >
+            <X className="h-5 w-5" />
+          </button>
           <h1 className="text-4xl md:text-6xl font-bold text-white mb-2 drop-shadow-lg">
             🌍 Resource Explorer Game 🎮
           </h1>

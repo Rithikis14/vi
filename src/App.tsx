@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { PointsProvider } from './context/PointsContext';
 import { AuthPage } from './components/auth/AuthPage';
 import { HomePage } from './pages/HomePage';
 import { CoursesPage } from './pages/CoursesPage';
@@ -121,7 +122,9 @@ function App() {
   return (
     <Router>
       <AuthProvider>
-        <AppRoutes />
+        <PointsProvider>
+          <AppRoutes />
+        </PointsProvider>
       </AuthProvider>
     </Router>
   );

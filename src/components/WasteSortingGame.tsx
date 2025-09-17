@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { WasteItem, WasteItemType } from './WasteItem';
 import { DustBin } from './DustBin';
 import { GameStats } from './GameStats';
 import { EducationalTip } from './EducationalTip';
-import { Play, Pause, RotateCcw } from 'lucide-react';
+import { Play, Pause, RotateCcw, X } from 'lucide-react';
+import { usePoints } from '../context/PointsContext';
 
 const WASTE_ITEMS = [
   { name: 'Banana Peel', category: 'wet', emoji: '🍌' },
@@ -26,6 +28,8 @@ const INITIAL_TIME = 180; // 3 minutes
 const ITEMS_PER_LEVEL = 8;
 
 export const WasteSortingGame: React.FC = () => {
+  const navigate = useNavigate();
+  const { addPoints } = usePoints();
   const [gameState, setGameState] = useState<'waiting' | 'playing' | 'paused' | 'ended'>('waiting');
   const [score, setScore] = useState(0);
   const [level, setLevel] = useState(1);
@@ -36,6 +40,7 @@ export const WasteSortingGame: React.FC = () => {
   const [feedbackBin, setFeedbackBin] = useState<{category: string, type: 'correct' | 'wrong'} | null>(null);
   const [showTip, setShowTip] = useState<{category: 'wet' | 'dry' | 'glass' | 'general', show: boolean}>({category: 'wet', show: false});
   const [dragPosition, setDragPosition] = useState<{x: number, y: number} | null>(null);
+  const [gameCompleted, setGameCompleted] = useState(false);
 
   const generateWasteItems = useCallback(() => {
     const items: WasteItemType[] = [];
@@ -73,6 +78,15 @@ export const WasteSortingGame: React.FC = () => {
     setDraggedItem(null);
     setHighlightedBin(null);
     setFeedbackBin(null);
+    setGameCompleted(false);
+  };
+
+  const exitGame = () => {
+    if (gameState === 'playing' && !gameCompleted) {
+      // Add points if exiting during play
+      addPoints(score);
+    }
+    navigate('/games');
   };
 
   const handleDragStart = (item: WasteItemType) => {
@@ -112,10 +126,13 @@ export const WasteSortingGame: React.FC = () => {
         setTimeLeft(prev => prev - 1);
       }, 1000);
       return () => clearTimeout(timer);
-    } else if (timeLeft === 0) {
+    } else if (timeLeft === 0 && !gameCompleted) {
       setGameState('ended');
+      // Add points when game ends
+      addPoints(score);
+      setGameCompleted(true);
     }
-  }, [gameState, timeLeft]);
+  }, [gameState, timeLeft, score, addPoints, gameCompleted]);
 
   // Level progression
   useEffect(() => {
@@ -172,7 +189,14 @@ export const WasteSortingGame: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-sky-200 via-green-100 to-green-200 p-4">
       {/* Header */}
-      <div className="text-center mb-6">
+      <div className="text-center mb-6 relative">
+        <button
+          onClick={exitGame}
+          className="absolute top-0 right-0 bg-red-500 hover:bg-red-600 text-white p-2 rounded-full transition-colors"
+          title="Exit Game"
+        >
+          <X className="h-5 w-5" />
+        </button>
         <h1 className="text-4xl font-bold text-green-800 mb-2">🌍 EcoSort Challenge 🌍</h1>
         <p className="text-lg text-green-700">Help keep our planet clean by sorting waste correctly!</p>
       </div>
@@ -298,14 +322,24 @@ export const WasteSortingGame: React.FC = () => {
             <div className="text-6xl mb-4">{score >= 100 ? '🏆' : '🎯'}</div>
             <h2 className="text-2xl font-bold text-gray-800 mb-4">Game Over!</h2>
             <div className="text-lg text-gray-600 mb-2">Final Score: <span className="font-bold text-green-600">{score}</span></div>
+            <div className="text-lg text-gray-600 mb-2">Points Earned: <span className="font-bold text-yellow-600">+{score} pts</span></div>
             <div className="text-lg text-gray-600 mb-6">Level Reached: <span className="font-bold text-purple-600">{level}</span></div>
-            <button 
-              onClick={startGame}
-              className="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-xl text-lg transition-colors flex items-center gap-2 mx-auto"
-            >
-              <Play className="w-6 h-6" />
-              Play Again
-            </button>
+            <div className="flex gap-4 justify-center">
+              <button 
+                onClick={startGame}
+                className="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-xl text-lg transition-colors flex items-center gap-2"
+              >
+                <Play className="w-6 h-6" />
+                Play Again
+              </button>
+              <button 
+                onClick={exitGame}
+                className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-xl text-lg transition-colors flex items-center gap-2"
+              >
+                <X className="w-6 h-6" />
+                Exit
+              </button>
+            </div>
           </div>
         </div>
       )}
