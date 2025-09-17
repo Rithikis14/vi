@@ -8,6 +8,9 @@ import { ChallengesPage } from './pages/ChallengesPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { GamesPage } from './pages/GamesPage';
 import { WasteSortingGame } from './components/WasteSortingGame';
+import SnakeLadder from './components/SnakeLadder';
+import CarbonGame from './components/CarbonGame';
+
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -80,6 +83,22 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <WasteSortingGame />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/games/snake-ladder" 
+        element={
+          <ProtectedRoute>
+            <SnakeLadder />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/games/carbon-game" 
+        element={
+          <ProtectedRoute>
+            <CarbonGame />
           </ProtectedRoute>
         } 
       />
