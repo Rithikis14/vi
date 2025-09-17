@@ -6,6 +6,8 @@ import { HomePage } from './pages/HomePage';
 import { CoursesPage } from './pages/CoursesPage';
 import { ChallengesPage } from './pages/ChallengesPage';
 import { ProfilePage } from './pages/ProfilePage';
+import { GamesPage } from './pages/GamesPage';
+import { WasteSortingGame } from './components/WasteSortingGame';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -62,6 +64,22 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <ProfilePage />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/games" 
+        element={
+          <ProtectedRoute>
+            <GamesPage />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/games/waste-sorting" 
+        element={
+          <ProtectedRoute>
+            <WasteSortingGame />
           </ProtectedRoute>
         } 
       />
