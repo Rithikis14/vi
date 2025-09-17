@@ -14,16 +14,31 @@ export function Navbar() {
             <Leaf className="h-8 w-8 text-green-600" />
             <span className="text-xl font-bold text-gray-900">EcoLearn</span>
           </Link>
-          
+
           <div className="hidden md:flex items-center space-x-8">
-            <Link to="/" className="text-gray-700 hover:text-green-600 transition-colors">
+            <Link
+              to="/"
+              className="text-gray-700 hover:text-green-600 transition-colors"
+            >
               Home
             </Link>
-            <Link to="/courses" className="text-gray-700 hover:text-green-600 transition-colors">
+            <Link
+              to="/courses"
+              className="text-gray-700 hover:text-green-600 transition-colors"
+            >
               Courses
             </Link>
-            <Link to="/challenges" className="text-gray-700 hover:text-green-600 transition-colors">
+            <Link
+              to="/challenges"
+              className="text-gray-700 hover:text-green-600 transition-colors"
+            >
               Daily Challenges
+            </Link>
+            <Link
+              to=" "
+              className="text-gray-700 hover:text-green-600 transition-colors"
+            >
+              Games
             </Link>
           </div>
 
@@ -31,10 +46,15 @@ export function Navbar() {
             {user && (
               <div className="flex items-center space-x-2 bg-yellow-50 px-3 py-1 rounded-full">
                 <Award className="h-4 w-4 text-yellow-600" />
-                <span className="text-sm font-medium text-yellow-800">{user.points} pts</span>
+                <span className="text-sm font-medium text-yellow-800">
+                  {user.points} pts
+                </span>
               </div>
             )}
-            <Link to="/profile" className="p-2 text-gray-700 hover:text-green-600 transition-colors">
+            <Link
+              to="/profile"
+              className="p-2 text-gray-700 hover:text-green-600 transition-colors"
+            >
               <User className="h-5 w-5" />
             </Link>
             <button
