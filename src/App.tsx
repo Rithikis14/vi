@@ -11,6 +11,7 @@ import { GamesPage } from './pages/GamesPage';
 import { WasteSortingGame } from './components/WasteSortingGame';
 import SnakeLadder from './components/SnakeLadder';
 import CarbonGame from './components/CarbonGame';
+import {Leaderboard } from './pages/LeaderboardPage';
 
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -79,6 +80,14 @@ function AppRoutes() {
           </ProtectedRoute>
         } 
       />
+       <Route 
+        path="/leader" 
+        element={
+          <ProtectedRoute>
+            <Leaderboard />
+          </ProtectedRoute>
+        } 
+      />
       <Route 
         path="/games/waste-sorting" 
         element={
@@ -103,6 +112,7 @@ function AppRoutes() {
           </ProtectedRoute>
         } 
       />
+     
       <Route path="*" element={<Navigate to="/" />} />
     </Routes>
   );
