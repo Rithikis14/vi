@@ -18,7 +18,7 @@ export function Navbar() {
           </Link>
 
           {/* Main Links */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden md:flex items-center space-x-9 mr-5">
             <Link to="/" className="text-gray-700 hover:text-green-600 transition-colors">
               Home
             </Link>
@@ -30,6 +30,9 @@ export function Navbar() {
             </Link>
             <Link to="/games" className="text-gray-700 hover:text-green-600 transition-colors">
               Games
+            </Link>
+            <Link to="/redeem" className="text-gray-700 hover:text-green-600 transition-colors">
+              Redeem
             </Link>
           </div>
 

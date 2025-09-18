@@ -12,7 +12,7 @@ import { WasteSortingGame } from './components/WasteSortingGame';
 import SnakeLadder from './components/SnakeLadder';
 import CarbonGame from './components/CarbonGame';
 import {Leaderboard } from './pages/LeaderboardPage';
-
+import { RedeemPage } from './pages/RedeemPage';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -77,6 +77,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <GamesPage />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/redeem" 
+        element={
+          <ProtectedRoute>
+            <RedeemPage />
           </ProtectedRoute>
         } 
       />

@@ -32,15 +32,15 @@ export function Footer() {
             <ul className="space-y-3">
               <li className="flex items-center space-x-2">
                 <Mail className="h-4 w-4 text-green-400" />
-                <span className="text-gray-300">info@ecolearn.edu</span>
+                <span className="text-gray-300">EcoLearn@earth.edu</span>
               </li>
               <li className="flex items-center space-x-2">
                 <Phone className="h-4 w-4 text-green-400" />
-                <span className="text-gray-300">+1 (555) 123-4567</span>
+                <span className="text-gray-300">+91 75500 91762</span>
               </li>
               <li className="flex items-center space-x-2">
                 <MapPin className="h-4 w-4 text-green-400" />
-                <span className="text-gray-300">123 Green St, Eco City</span>
+                <span className="text-gray-300">VIT, Kelambakkam, Chennai-100</span>
               </li>
             </ul>
           </div>
