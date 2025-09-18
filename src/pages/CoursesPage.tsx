@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { BookOpen, Play, Clock, CheckCircle } from "lucide-react";
+import { BookOpen, Play, Clock, CheckCircle, Award } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Navbar } from "../components/Navbar";
 import { Footer } from "../components/Footer";
+import { usePoints } from "../context/PointsContext";
 
 // Normalize various YouTube URL formats into an embeddable URL
 function getYouTubeEmbedUrl(originalUrl: string): string {
@@ -68,24 +69,36 @@ type SelectedContent =
 
 // Quiz component (added without changing existing page logic)
 const QuizWithTailwind = ({ questions }: { questions: QuizQuestion[] }) => {
+  const { addPoints } = usePoints();
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [score, setScore] = useState(0);
   const [showResults, setShowResults] = useState(false);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const [pointsEarned, setPointsEarned] = useState(0);
 
   const quizData = questions;
 
   const handleOptionClick = (option: string) => {
     if (selectedOption !== null) return;
     setSelectedOption(option);
-    if (option === quizData[currentQuestion].correctAnswer) {
+    
+    const isCorrect = option === quizData[currentQuestion].correctAnswer;
+    const newScore = score + (isCorrect ? 1 : 0);
+    
+    if (isCorrect) {
       setScore((s) => s + 1);
     }
+    
     setTimeout(() => {
       if (currentQuestion < quizData.length - 1) {
         setCurrentQuestion((q) => q + 1);
         setSelectedOption(null);
       } else {
+        // Check if perfect score (100%) - all questions answered correctly
+        if (newScore === quizData.length) {
+          addPoints(5);
+          setPointsEarned(5);
+        }
         setShowResults(true);
       }
     }, 1500);
@@ -96,6 +109,7 @@ const QuizWithTailwind = ({ questions }: { questions: QuizQuestion[] }) => {
     setScore(0);
     setShowResults(false);
     setSelectedOption(null);
+    setPointsEarned(0);
   };
 
   return (
@@ -134,8 +148,37 @@ const QuizWithTailwind = ({ questions }: { questions: QuizQuestion[] }) => {
             <h2 className="text-2xl font-bold mb-4">
               Your Score: {score}/{quizData.length}
             </h2>
+            
+            {/* Show percentage and points earned */}
+            <div className="mb-6">
+              <div className="text-lg mb-2">
+                Score: <span className="font-bold text-yellow-300">{(score / quizData.length * 100).toFixed(0)}%</span>
+              </div>
+              
+              {pointsEarned > 0 && (
+                <div className="bg-green-600 rounded-lg p-4 mb-4">
+                  <div className="flex items-center justify-center text-green-100">
+                    <Award className="h-6 w-6 mr-2" />
+                    <span className="text-lg font-bold">
+                      Perfect Score! You earned {pointsEarned} points! 🎉
+                    </span>
+                  </div>
+                </div>
+              )}
+              
+              {pointsEarned === 0 && score === quizData.length && (
+                <div className="bg-yellow-600 rounded-lg p-4 mb-4">
+                  <div className="text-yellow-100">
+                    <span className="font-bold">Great job! You got all questions right!</span>
+                    <br />
+                    <span className="text-sm">Complete a quiz for the first time to earn points.</span>
+                  </div>
+                </div>
+              )}
+            </div>
+            
             <button
-              className="bg-red-500 px-4 py-2 rounded-lg"
+              className="bg-red-500 hover:bg-red-600 px-6 py-3 rounded-lg font-semibold transition-colors"
               onClick={restartQuiz}
             >
               Try Again
